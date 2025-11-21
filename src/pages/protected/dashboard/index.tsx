@@ -59,6 +59,7 @@ const Dashboard = () => {
             flex: 1,
             position: 'relative',
             zIndex: '1',
+            backgroundColor: '#f6f6f8',
             minHeight: 'calc(100vh - 64px)',
             overflow: 'auto',
             '&::-webkit-scrollbar': {

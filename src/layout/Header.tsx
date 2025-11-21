@@ -1,7 +1,7 @@
-import React from 'react'
-import { AppBar, Toolbar, Typography, IconButton, Box, useTheme, Tooltip } from '@mui/material'
-import { Brightness4, Brightness7, Menu as MenuIcon } from '@mui/icons-material'
-import { Logo } from '@/assets/png'
+import React, { useState } from 'react'
+import { AppBar, Toolbar, Typography, IconButton, Box, Tooltip, Avatar, Menu, MenuItem } from '@mui/material'
+import { Brightness4, Brightness7, KeyboardArrowDown, Menu as MenuIcon } from '@mui/icons-material'
+import { useTheme, useMediaQuery } from '@mui/material'
 
 interface HeaderProps {
   onToggleSidebar: () => void
@@ -12,6 +12,17 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onToggleTheme, mode, sidebarOpen = true }) => {
   const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(null)
+  const profileMenuOpen = Boolean(profileAnchorEl)
+
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
+    setProfileAnchorEl(event.currentTarget)
+  }
+
+  const handleProfileClose = () => {
+    setProfileAnchorEl(null)
+  }
 
   return (
     <AppBar
@@ -19,79 +30,149 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onToggleTheme, mode, s
       sx={{
         width: {
           xs: '100%',
-          md: sidebarOpen ? `calc(100% - 0px)` : `calc(100% - 0px)`
+          md: sidebarOpen ? `calc(100% - 250px)` : `calc(100% - 60px)`
         },
         ml: {
           xs: 0,
           md: sidebarOpen ? '250px' : '60px'
         },
-        minHeight: 'unset',
-        py: '9px',
+        minHeight: '64px',
+        py: 0,
         justifyContent: 'center',
         top: 0,
         color: 'text.primary',
-        zIndex: '1203 !important',
-        boxShadow: theme.palette.mode === 'light' ? 'unset' : '4px 3px 28px 0px rgba(var(--color-box-shadow))',
+        zIndex: 1203,
+        boxShadow: 'none',
+        borderBottom: '1px solid #ecedee',
         backdropFilter: 'blur(8px)',
-        background: theme.palette.mode === 'light' ? 'rgba(var(--nav-bg), 0.92)' : 'rgba(18, 24, 37)'
+        background: '#ffffff'
       }}
     >
-      <Toolbar sx={{ px: { xs: 2, md: 3 }, minHeight: 'unset !important' }}>
-        {/* Toggle Menu Button */}
-        <IconButton
-          color='primary'
-          aria-label='toggle sidebar'
-          edge='start'
-          onClick={onToggleSidebar}
-          sx={{
-            mr: 2,
-            height: 'max-content',
-            minHeight: 'unset',
-            px: { xs: '6px', md: '0px' },
-            '&:hover': { backgroundColor: 'transparent' },
-            '& .MuiTouchRipple-root ': { display: 'none' }
-          }}
-        >
-          <MenuIcon sx={{ fontSize: '30px' }} />
-        </IconButton>
-
-        {/* Logo */}
-        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: '240px' }}>
-          <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-            <img className='img-fluid' src={Logo} alt='side_img' style={{ maxWidth: '90px' }} />
-          </Typography>
-        </Box>
+      <Toolbar
+        sx={{
+          px: { xs: 2, md: 3 },
+          minHeight: '64px !important',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          gap: 1
+        }}
+      >
+        {/* Mobile Toggle Button */}
+        {isMobile && (
+          <IconButton
+            color='inherit'
+            aria-label='toggle sidebar'
+            edge='start'
+            onClick={onToggleSidebar}
+            sx={{
+              mr: 1,
+              color: '#374151',
+              '&:hover': { backgroundColor: '#f3f4f6' },
+              display: { xs: 'flex', md: 'none' }
+            }}
+          >
+            <MenuIcon sx={{ fontSize: '24px' }} />
+          </IconButton>
+        )}
 
         {/* Right Side Actions */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 'auto' }}>
           {/* Theme Toggle */}
           <Tooltip title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}>
             <IconButton
-              color='primary'
               onClick={onToggleTheme}
               sx={{
-                display: 'flex',
-                padding: '10px',
-                width: '37px',
-                height: '37px',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '8px !important',
-                margin: '0 auto',
-                fontSize: '1.1rem',
+                width: '40px',
+                height: '40px',
+                borderRadius: '8px',
+                backgroundColor: '#f3f4f6',
+                color: '#374151',
                 '&:hover': {
-                  backgroundColor: 'action.hover'
-                },
-                backgroundColor: 'rgb(var(--color-sf-primary), 0.1)'
+                  backgroundColor: '#e5e7eb'
+                }
               }}
             >
-              {mode === 'light' ? (
-                <Brightness4 sx={{ fontSize: '16px', color: 'rgb(var(--color-sf-primary))' }} />
-              ) : (
-                <Brightness7 sx={{ fontSize: '16px', color: 'rgb(var(--color-sf-white))' }} />
-              )}
+              {mode === 'light' ? <Brightness4 sx={{ fontSize: '20px' }} /> : <Brightness7 sx={{ fontSize: '20px' }} />}
             </IconButton>
           </Tooltip>
+
+          {/* Profile Section */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              ml: 1,
+              pl: 1,
+              cursor: 'pointer',
+              borderRadius: '8px',
+              px: 1,
+              py: 0.5,
+              '&:hover': {
+                backgroundColor: '#f3f4f6'
+              }
+            }}
+            onClick={handleProfileClick}
+          >
+            <Avatar
+              sx={{
+                width: '36px',
+                height: '36px',
+                backgroundColor: '#3b82f6',
+                fontSize: '14px',
+                fontWeight: 600
+              }}
+            >
+              UR
+            </Avatar>
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', alignItems: 'flex-start' }}>
+              <Typography
+                sx={{
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#111827',
+                  lineHeight: 1.2
+                }}
+              >
+                Uziel Renta
+              </Typography>
+            </Box>
+            <KeyboardArrowDown
+              sx={{
+                fontSize: '20px',
+                color: '#6b7280',
+                display: { xs: 'none', md: 'block' }
+              }}
+            />
+          </Box>
+
+          {/* Profile Menu */}
+          <Menu
+            anchorEl={profileAnchorEl}
+            open={profileMenuOpen}
+            onClose={handleProfileClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right'
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}
+            sx={{
+              mt: 1,
+              '& .MuiPaper-root': {
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                minWidth: '200px'
+              }
+            }}
+          >
+            <MenuItem onClick={handleProfileClose}>Profile</MenuItem>
+            <MenuItem onClick={handleProfileClose}>Settings</MenuItem>
+            <MenuItem onClick={handleProfileClose}>Logout</MenuItem>
+          </Menu>
         </Box>
       </Toolbar>
     </AppBar>
